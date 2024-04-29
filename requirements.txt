@@ -4,3 +4,4 @@ pandas
 openpyxl
 python-dotenv
 pyyaml
+webdriver_manager

@@ -1,12 +1,13 @@
 import time
 import os
+import sys
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 import logging
 from libs.utils import load_config, web_driver, send_email
 
 
-logging.basicConfig(filename='logs/visa_logs.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Env variables
 load_dotenv()
@@ -25,6 +26,7 @@ url_down = True
 while url_down:
     try:
         driver = web_driver()
+        logging.info(f"Start connection.")
         url = "https://ais.usvisa-info.com/fr-fr/niv/users/sign_in"
         driver.get(url)
         driver.maximize_window()
@@ -40,7 +42,9 @@ while url_down:
         driver.get(f"https://ais.usvisa-info.com/fr-fr/niv/schedule/34159750/appointment")
         time.sleep(3)
         url_down = False
-    except:
+    except Exception as e:
+        logging.info(f"Connection failed !")
+        logging.error(e)
         time.sleep(60)
         continue
 
@@ -48,9 +52,9 @@ while url_down:
 seconds = 60
 while True:
     try:
+        logging.info(f"Start searching.")
         found = False
         driver.find_element(By.XPATH, '//*[@id="appointments_consulate_appointment_date"]').click()
-        logging.info(f"Start searching.")
         i = 1
         while i <= 20:
             year_month = driver.find_element(By.XPATH, '//*[@id="ui-datepicker-div"]/div[1]/div').text
@@ -88,7 +92,9 @@ while True:
         logging.info(f"No slot found before {year_month_max}, waiting {seconds} seconds to research.")
         driver.refresh()
         time.sleep(seconds)
-    except:
+    except Exception as e:
+        logging.info(f"Searching failed !")
+        logging.error(e)
         time.sleep(seconds)
         driver.refresh()
         continue
