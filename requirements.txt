@@ -1,0 +1,7 @@
+selenium
+numpy
+pandas
+openpyxl
+python-dotenv
+pyyaml
+free-proxy
