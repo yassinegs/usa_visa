@@ -31,16 +31,20 @@ while url_down:
         driver.get(url)
         driver.maximize_window()
 
+        time.sleep(3)
+        driver.save_screenshot('step0.png')
         # Connection
         driver.find_element(By.XPATH, '//*[@id="user_email"]').send_keys(visa_email)
         driver.find_element(By.XPATH, '//*[@id="user_password"]').send_keys(visa_mdp)
 
         driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/div[3]/label/div').click()
         driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/p[1]/input').click()
-        time.sleep(3)
+        time.sleep(10)
+        driver.save_screenshot('step1.png')
         # Appointment url
         driver.get(f"https://ais.usvisa-info.com/fr-fr/niv/schedule/34159750/appointment")
-        time.sleep(3)
+        time.sleep(10)
+        driver.save_screenshot('step2.png')
         url_down = False
     except Exception as e:
         logging.info(f"Connection failed !")
