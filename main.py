@@ -21,42 +21,47 @@ config = load_config("config/config.yaml")
 info_config = config['info']
 year_month_max = info_config["year_month_max"]
 recipient_email = info_config["recipient_email"]
+url = info_config["url"]
 
-url_down = True
-while url_down:
-    try:
-        driver = web_driver()
-        logging.info(f"Start connection.")
-        url = "https://ais.usvisa-info.com/fr-fr/niv/users/sign_in"
-        driver.get(url)
-        driver.maximize_window()
+def connection():
+    url_down = True
+    while url_down:
+        try:
+            driver = web_driver()
+            logging.info(f"Start connection.")
+            driver.get(url)
+            driver.maximize_window()
 
-        time.sleep(3)
-        driver.save_screenshot('step0.png')
-        # Connection
-        driver.find_element(By.XPATH, '//*[@id="user_email"]').send_keys(visa_email)
-        driver.find_element(By.XPATH, '//*[@id="user_password"]').send_keys(visa_mdp)
+            time.sleep(3)
+            driver.save_screenshot('step0.png')
+            # Connection
+            driver.find_element(By.XPATH, '//*[@id="user_email"]').send_keys(visa_email)
+            driver.find_element(By.XPATH, '//*[@id="user_password"]').send_keys(visa_mdp)
 
-        driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/div[3]/label/div').click()
-        driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/p[1]/input').click()
-        time.sleep(10)
-        driver.save_screenshot('step1.png')
-        # Appointment url
-        driver.get(f"https://ais.usvisa-info.com/fr-fr/niv/schedule/34159750/appointment")
-        time.sleep(10)
-        driver.save_screenshot('step2.png')
-        url_down = False
-    except Exception as e:
-        logging.info(f"Connection failed !")
-        logging.error(e)
-        time.sleep(60)
-        continue
+            driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/div[3]/label/div').click()
+            driver.find_element(By.XPATH, '//*[@id="sign_in_form"]/p[1]/input').click()
+            time.sleep(10)
+            driver.save_screenshot('step1.png')
+            # Appointment url
+            driver.get(f"https://ais.usvisa-info.com/fr-fr/niv/schedule/34159750/appointment")
+            time.sleep(10)
+            driver.save_screenshot('step2.png')
+            url_down = False
+        except Exception as e:
+            logging.info(f"Connection failed !")
+            logging.error(e)
+            time.sleep(60)
+            continue
+    return driver
+
+driver = connection()
 
 # Search
 seconds = 60
 while True:
     try:
         logging.info(f"Start searching.")
+        driver.save_screenshot('step3.png')
         found = False
         driver.find_element(By.XPATH, '//*[@id="appointments_consulate_appointment_date"]').click()
         i = 1
@@ -99,6 +104,6 @@ while True:
     except Exception as e:
         logging.info(f"Searching failed !")
         logging.error(e)
-        time.sleep(seconds)
-        driver.refresh()
+        driver.quit()
+        driver = connection()
         continue
